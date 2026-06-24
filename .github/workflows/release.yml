@@ -158,11 +158,11 @@ jobs:
           cp macos/icon.icns EsharqInstaller.app/Contents/Resources/icon.icns
 
       - name: Import signing certificate
-        if: ${{ secrets.APPLE_SIGNING_CERT != '' }}
         env:
           CSC_LINK: ${{ secrets.APPLE_SIGNING_CERT }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_SIGNING_CERT_PASSWORD }}
         run: |
+          if [ -z "$CSC_LINK" ]; then echo "No Apple signing cert configured — skipping macOS signing (unsigned build)."; exit 0; fi
           echo "$CSC_LINK" | base64 --decode > certificate.p12
           security create-keychain -p "" build.keychain
           security default-keychain -s build.keychain
@@ -172,19 +172,21 @@ jobs:
           rm certificate.p12
 
       - name: Sign the executables
-        if: ${{ secrets.APPLE_SIGNING_CERT != '' }}
+        env:
+          CSC_LINK: ${{ secrets.APPLE_SIGNING_CERT }}
         run: |
+          if [ -z "$CSC_LINK" ]; then echo "No Apple signing cert — skipping codesign (unsigned build)."; exit 0; fi
           codesign --force --options runtime --sign "Developer ID Application" EsharqInstaller.app/Contents/MacOS/EsharqInstaller
           codesign --force --options runtime --sign "Developer ID Application" EsharqInstaller.app
           codesign --force --options runtime --sign "Developer ID Application" ${{ matrix.cli_name }}
 
       - name: Notarize the executables
-        if: ${{ secrets.APPLE_API_KEY != '' }}
         env:
           API_KEY: ${{ secrets.APPLE_API_KEY }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: |
+          if [ -z "$API_KEY" ]; then echo "No Apple API key — skipping notarization."; exit 0; fi
           echo "$API_KEY" > apple.p8
           ditto -c -k --keepParent EsharqInstaller.app EsharqInstaller-notarize.zip
           ditto -c -k ${{ matrix.cli_name }} EsharqInstallerCli-notarize.zip
