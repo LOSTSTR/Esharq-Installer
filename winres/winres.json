@@ -1,0 +1,35 @@
+{
+  "RT_GROUP_ICON": {
+    "APP": {
+      "0000": [
+        "icon.png"
+      ]
+    }
+  },
+  "RT_MANIFEST": {
+    "#1": {
+      "0409": {
+        "description": "An Installer for the Esharq Discord Mod",
+        "minimum-os": "win10",
+        "execution-level": "as invoker",
+        "dpi-awareness": "system"
+      }
+    }
+  },
+  "RT_VERSION": {
+    "#1": {
+      "0000": {
+        "info": {
+          "0409": {
+            "Comments": "Comments",
+            "CompanyName": "Esharq",
+            "FileDescription": "EsharqInstaller",
+            "LegalCopyright": "© 2026 Vencord & Esharq contributors - GPL3.0",
+            "ProductName": "EsharqInstaller",
+            "ProductVersion": ""
+          }
+        }
+      }
+    }
+  }
+}
